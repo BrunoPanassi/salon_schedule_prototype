@@ -1,26 +1,28 @@
 package com.schedulesalon.prototype.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Data
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = false)
-public class Client extends Person{
+@RequiredArgsConstructor
+public class Client {
 
-    private String lastVisitedSalon;
+    @Id
+    @SequenceGenerator(name = "seq_client", sequenceName = "seq_client")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_client")
+    private Long id;
 
-    private List<Schedules> schedules;
+    @OneToOne
+    @JoinColumn(name = "person_id")
+    private Person person;
 
-    public Client(String name, String password) {
-        super(name, password);
-    }
+    @OneToMany(mappedBy = "client")
+    private List<Task> tasks;
+
+
 }

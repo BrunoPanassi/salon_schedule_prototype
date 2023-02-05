@@ -1,9 +1,9 @@
 package com.schedulesalon.prototype.model;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -14,11 +14,26 @@ import javax.persistence.Id;
 public class Service {
 
     @Id
+    @SequenceGenerator(name = "seq_generator", sequenceName = "seq_generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_generator")
     private Long id;
 
-    private Long jobId;
+    @ManyToOne
+    @JoinColumn(name = "task_id")
+    private Task task;
 
-    private Long salonId;
+    @ManyToOne
+    @JoinColumn(name = "salon_id")
+    private Salon salon;
+
+    @ManyToOne
+    @JoinColumn(name = "service_type_id")
+    private ServiceType serviceType;
 
     private String description;
+
+    private Double price;
+
+    @NotNull
+    private Long timeExecutionAverage; //In minutes
 }

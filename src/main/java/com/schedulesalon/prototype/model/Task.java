@@ -4,8 +4,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -14,13 +14,18 @@ import javax.persistence.Id;
 public class Task {
 
     @Id
+    @SequenceGenerator(name = "seq_task", sequenceName = "seq_task")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_task")
     private Long id;
 
-    private Long scheduleId;
+    @OneToOne
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
 
-    private Long clientId;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
 
-    private Long serviceId;
-
-    private String description;
+    @OneToMany(mappedBy = "task")
+    private List<Service> services;
 }

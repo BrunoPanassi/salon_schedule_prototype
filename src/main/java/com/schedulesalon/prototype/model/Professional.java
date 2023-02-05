@@ -1,38 +1,37 @@
 package com.schedulesalon.prototype.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import com.sun.istack.NotNull;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Data
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = false)
-public class Professional extends Person{
+@RequiredArgsConstructor
+public class Professional {
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+    @Id
+    @SequenceGenerator(name = "seq_professional", sequenceName = "seq_professional")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_professional")
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "person_id")
+    private Person person;
 
     @ManyToOne
     @JoinColumn(name = "salon_id")
     private Salon salon;
 
     @OneToMany(mappedBy = "professional")
-    private List<Jobs> jobs;
+    private List<Hour> hours;
 
     @OneToMany(mappedBy = "professional")
-    private List<Schedules> schedules;
+    private List<Job> jobs;
 
-    public Professional(String name, String password) {
-        super(name, password);
-    }
+    @NotNull
+    private Boolean allowScheduleInTime;
 }

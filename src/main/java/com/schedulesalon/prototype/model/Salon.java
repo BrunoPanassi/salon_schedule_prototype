@@ -2,8 +2,7 @@ package com.schedulesalon.prototype.model;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -15,6 +14,8 @@ import java.util.List;
 public class Salon {
 
     @Id
+    @SequenceGenerator(name = "seq_salon", sequenceName = "seq_salon")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_salon")
     private Long id;
 
     private String name;
@@ -23,11 +24,14 @@ public class Salon {
 
     private String address;
 
-    private Long typeId;
+    @ManyToOne
+    @JoinColumn(name = "salon_type_id")
+    private SalonType salonType;
 
-    private Double rangePrice;
-
+    @OneToMany(mappedBy = "salon")
     private List<Professional> professionals;
 
-    private Long managerId;
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private  Manager manager;
 }
