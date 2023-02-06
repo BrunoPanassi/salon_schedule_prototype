@@ -4,6 +4,8 @@ import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -29,8 +31,8 @@ public class Professional {
     @OneToMany(mappedBy = "professional")
     private List<Hour> hours;
 
-    @OneToMany(mappedBy = "professional")
-    private List<Job> jobs;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Collection<Job> jobs = new ArrayList<>();
 
     @NotNull
     private Boolean allowScheduleInTime;

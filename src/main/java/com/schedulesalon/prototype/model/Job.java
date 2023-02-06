@@ -3,7 +3,6 @@ package com.schedulesalon.prototype.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
@@ -19,10 +18,6 @@ public class Job {
     private Long id;
 
     private String description;
-
-    @ManyToOne
-    @JoinColumn(name = "professional_id")
-    private Professional professional;
 
     @ManyToOne
     @JoinColumn(name = "job_type_id")
