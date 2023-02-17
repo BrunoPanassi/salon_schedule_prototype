@@ -4,6 +4,8 @@ import com.schedulesalon.prototype.model.Person;
 import com.schedulesalon.prototype.model.Role;
 import com.schedulesalon.prototype.repo.PersonRepo;
 import com.schedulesalon.prototype.repo.RoleRepo;
+import com.schedulesalon.prototype.util.UtilParam;
+import jdk.jshell.execution.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +23,7 @@ public class PersonServiceImpl implements PersonService{
     @Override
     public Person savePerson(String name, String phoneNumber, String email, String password) throws Exception {
         String[] params = { name, phoneNumber, email, password};
-        long howManyParamsAreFilled = Arrays.stream(params).filter(p -> p.length() > 0).count();
-        long paramsCount = Arrays.stream(params).count();
-        if (howManyParamsAreFilled == paramsCount) {
+        if (UtilParam.allStringParamsAreFilled(params)) {
             Person personFinded = personRepo.findByNameAndPhoneNumberAndEmail(name, phoneNumber, email);
             if (personFinded != null) {
                 throw new Exception("Já existe um usuário com os mesmos dados!");
@@ -47,9 +47,7 @@ public class PersonServiceImpl implements PersonService{
     @Override
     public Person search(String name, String phoneNumber, String email) throws Exception {
         String[] params = { name, phoneNumber, email};
-        long howManyParamsAreFilled = Arrays.stream(params).filter(p -> p.length() > 0).count();
-        long paramsCount = Arrays.stream(params).count();
-        if (howManyParamsAreFilled == paramsCount) {
+        if (UtilParam.allStringParamsAreFilled(params)) {
             Person personFinded = personRepo.findByNameAndPhoneNumberAndEmail(name, phoneNumber, email);
             if (personFinded == null) {
                 throw new Exception("Usuário não encontrado!");
