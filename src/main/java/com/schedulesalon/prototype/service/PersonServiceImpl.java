@@ -28,10 +28,15 @@ public class PersonServiceImpl implements PersonService{
     }
 
     @Override
-    public void addRole(String personName, String phoneNumber, String email, String roleType) {
-        //TO DO: Cada find deveria ter um try catch com uma exceção
+    public void addRole(String personName, String phoneNumber, String email, String roleType) throws Exception {
         Role role = roleRepo.findByType(roleType);
+        if (role == null)
+            UtilException.throwDefault(UtilException.ROLE_NOT_FOUND);
+
         Person person = personRepo.findByNameAndPhoneNumberAndEmail(personName, phoneNumber, email);
+        if (person == null)
+            UtilException.throwDefault(UtilException.USER_NOT_FOUND);
+
         person.getRoles().add(role);
         personRepo.save(person);
     }
