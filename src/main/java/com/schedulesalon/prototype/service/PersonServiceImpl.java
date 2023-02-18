@@ -4,6 +4,7 @@ import com.schedulesalon.prototype.model.Person;
 import com.schedulesalon.prototype.model.Role;
 import com.schedulesalon.prototype.repo.PersonRepo;
 import com.schedulesalon.prototype.repo.RoleRepo;
+import com.schedulesalon.prototype.util.UtilException;
 import com.schedulesalon.prototype.util.UtilParam;
 import jdk.jshell.execution.Util;
 import lombok.RequiredArgsConstructor;
@@ -21,22 +22,13 @@ public class PersonServiceImpl implements PersonService{
     private final PersonRepo personRepo;
 
     @Override
-    public Person savePerson(String name, String phoneNumber, String email, String password) throws Exception {
-        String[] params = { name, phoneNumber, email, password};
-        if (UtilParam.allStringParamsAreFilled(params)) {
-            Person personFinded = personRepo.findByNameAndPhoneNumberAndEmail(name, phoneNumber, email);
-            if (personFinded != null) {
-                throw new Exception("Já existe um usuário com os mesmos dados!");
-            }
-            return personRepo.save(new Person(name, password, phoneNumber, email));
-        } else {
-            throw new Exception("Todos os parâmetros não estão preenchidos!");
-        }
-
+    public Person save(String name, String phoneNumber, String email, String password) throws Exception {
+        search(name, phoneNumber, email);
+        return personRepo.save(new Person(name, password, phoneNumber, email));
     }
 
     @Override
-    public void addRoleToPerson(String personName, String phoneNumber, String email, String roleType) {
+    public void addRole(String personName, String phoneNumber, String email, String roleType) {
         //TO DO: Cada find deveria ter um try catch com uma exceção
         Role role = roleRepo.findByType(roleType);
         Person person = personRepo.findByNameAndPhoneNumberAndEmail(personName, phoneNumber, email);
@@ -47,14 +39,11 @@ public class PersonServiceImpl implements PersonService{
     @Override
     public Person search(String name, String phoneNumber, String email) throws Exception {
         String[] params = { name, phoneNumber, email};
-        if (UtilParam.allStringParamsAreFilled(params)) {
-            Person personFinded = personRepo.findByNameAndPhoneNumberAndEmail(name, phoneNumber, email);
-            if (personFinded == null) {
-                throw new Exception("Usuário não encontrado!");
-            }
-            return personFinded;
-        } else {
-            throw new Exception("Todos os parâmetros não estão preenchidos!");
+        UtilParam.throwExceptionIfStringParamsAreNotFilled(params);
+        Person personFinded = personRepo.findByNameAndPhoneNumberAndEmail(name, phoneNumber, email);
+        if (personFinded == null) {
+            UtilException.throwDefault(UtilException.USER_NOT_FOUND);
         }
+        return personFinded;
     }
 }

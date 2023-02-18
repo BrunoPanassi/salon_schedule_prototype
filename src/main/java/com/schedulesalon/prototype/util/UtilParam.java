@@ -10,6 +10,12 @@ public class UtilParam {
         return howManyParamsAreFilled == paramsCount;
     }
 
+    public static void throwExceptionIfStringParamsAreNotFilled(String[] params) throws Exception {
+        if (!UtilParam.allStringParamsAreFilled(params)) {
+            UtilException.throwDefault(UtilException.ALL_PARAMS_ARE_NOT_FILLED);
+        }
+    }
+
     public static Long stringParamsCount(Object[] params) {
         return Arrays.stream(params).count();
     }
