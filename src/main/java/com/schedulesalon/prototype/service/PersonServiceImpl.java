@@ -23,8 +23,12 @@ public class PersonServiceImpl implements PersonService{
 
     @Override
     public Person save(String name, String phoneNumber, String email, String password) throws Exception {
-        search(name, phoneNumber, email);
-        return personRepo.save(new Person(name, password, phoneNumber, email));
+        try {
+            search(name, phoneNumber, email);
+        } catch (Exception e) {
+            return personRepo.save(new Person(name, password, phoneNumber, email));
+        }
+        return null;
     }
 
     @Override
@@ -33,9 +37,7 @@ public class PersonServiceImpl implements PersonService{
         if (role == null)
             UtilException.throwDefault(UtilException.ROLE_NOT_FOUND);
 
-        Person person = personRepo.findByNameAndPhoneNumberAndEmail(personName, phoneNumber, email);
-        if (person == null)
-            UtilException.throwDefault(UtilException.USER_NOT_FOUND);
+        Person person = search(personName, phoneNumber, email);
 
         person.getRoles().add(role);
         personRepo.save(person);
