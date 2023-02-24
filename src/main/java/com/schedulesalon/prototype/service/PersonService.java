@@ -1,9 +1,10 @@
 package com.schedulesalon.prototype.service;
 
 import com.schedulesalon.prototype.model.Person;
+import com.schedulesalon.prototype.model.Role;
 
 public interface PersonService {
-    Person save(String name, String phoneNumber, String email, String password) throws Exception;
-    void addRole(String username, String phoneNumber, String email, String roleType) throws Exception;
-    Person find(String name, String phoneNumber, String email) throws Exception;
+    Person save(Person person) throws Exception;
+    void addRole(Person person, Role role) throws Exception;
+    Person find(Person person) throws Exception;
 }

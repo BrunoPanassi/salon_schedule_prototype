@@ -22,30 +22,32 @@ public class PersonServiceImpl implements PersonService{
     private final PersonRepo personRepo;
 
     @Override
-    public Person save(String name, String phoneNumber, String email, String password) throws Exception {
-        Person personFinded = find(name, phoneNumber, email);
+    public Person save(Person person) throws Exception {
+        Person personFinded = find(person);
         if (personFinded != null) {
             UtilException.throwDefault(UtilException.THERE_IS_ALREADY_A_RECORD_WITH_THIS_DATA);
         }
-        return personRepo.save(new Person(name, password, phoneNumber, email));
+        return personRepo.save(person);
     }
 
     @Override
-    public void addRole(String personName, String phoneNumber, String email, String roleType) throws Exception {
-        Role role = roleRepo.findByType(roleType);
-        if (role == null)
+    public void addRole(Person person, Role role) throws Exception {
+        Role roleFinded = roleRepo.findByType(role.getType());
+        if (roleFinded == null)
             UtilException.throwDefault(UtilException.ROLE_NOT_FOUND);
 
-        Person person = find(personName, phoneNumber, email);
+        Person personFinded = find(person);
+        if (personFinded == null)
+            UtilException.throwDefault(UtilException.USER_NOT_FOUND);
 
         person.getRoles().add(role);
         personRepo.save(person);
     }
 
     @Override
-    public Person find(String name, String phoneNumber, String email) throws Exception {
-        String[] params = { name, phoneNumber, email};
+    public Person find(Person person) throws Exception {
+        String[] params = { person.getName(), person.getPhoneNumber(), person.getEmail()};
         UtilParam.throwExceptionIfStringParamsAreNotFilled(params);
-        return personRepo.findByNameAndPhoneNumberAndEmail(name, phoneNumber, email);
+        return personRepo.findByNameAndPhoneNumberAndEmail(person.getName(), person.getPhoneNumber(), person.getEmail());
     }
 }

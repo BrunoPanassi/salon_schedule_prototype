@@ -37,20 +37,15 @@ class PersonServiceImplTest {
     @Test
     void canSavePerson() throws Exception {
         // given
-        String name = "Michael Jackson";
-        String password = "billiejean";
-        String email = "michael@hotmail.com";
-        String phoneNumber = "18 997 555";
-
         Person michael = new Person(
-                name,
-                password,
-                phoneNumber,
-                email
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
         );
 
         // when
-        personService.save(name, phoneNumber, email, password);
+        personService.save(michael);
 
         //then
         ArgumentCaptor<Person> personArgumentCaptor =
@@ -65,23 +60,18 @@ class PersonServiceImplTest {
     @Test
     void willThrowWhenTryToSave() throws Exception {
         // given
-        String name = "Michael Jackson";
-        String password = "billiejean";
-        String email = "michael@hotmail.com";
-        String phoneNumber = "18 997 555";
-
         Person michael = new Person(
-                name,
-                password,
-                phoneNumber,
-                email
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
         );
 
-        given(personService.find(name, phoneNumber, email)).willReturn(michael);
+        given(personService.find(michael)).willReturn(michael);
 
         //when
         //then
-        assertThatThrownBy(() -> personService.save(name, phoneNumber, email, password))
+        assertThatThrownBy(() -> personService.save(michael))
                 .isInstanceOf(Exception.class)
                 .hasMessageContaining(UtilException.THERE_IS_ALREADY_A_RECORD_WITH_THIS_DATA);
     }
@@ -93,6 +83,6 @@ class PersonServiceImplTest {
 
     @Test
     @Disabled
-    void search() {
+    void find() {
     }
 }
