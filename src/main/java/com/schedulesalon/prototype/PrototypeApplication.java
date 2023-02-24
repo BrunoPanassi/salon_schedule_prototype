@@ -31,8 +31,8 @@ public class PrototypeApplication {
 			personService.savePerson(new Person("Bruno", "senha123", "18 997", "bruno@email.com"));
 			personService.savePerson(new Person("Ronaldo", "corinthians", "55 997", "ronaldo@email.com"));
 			 */
-			personService.addRoleToPerson("Ronaldo", "55 997", "ronaldo@email.com", "PROFESSIONAL");
-			personService.addRoleToPerson("Ronaldo", "55 997", "ronaldo@email.com","MANAGER");
+			//personService.addRoleToPerson("Ronaldo", "55 997", "ronaldo@email.com", "PROFESSIONAL");
+			//personService.addRoleToPerson("Ronaldo", "55 997", "ronaldo@email.com","MANAGER");
 		};
 	}
 
