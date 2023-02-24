@@ -23,12 +23,11 @@ public class PersonServiceImpl implements PersonService{
 
     @Override
     public Person save(String name, String phoneNumber, String email, String password) throws Exception {
-        try {
-            search(name, phoneNumber, email);
-        } catch (Exception e) {
-            return personRepo.save(new Person(name, password, phoneNumber, email));
+        Person personFinded = find(name, phoneNumber, email);
+        if (personFinded != null) {
+            UtilException.throwDefault(UtilException.THERE_IS_ALREADY_A_RECORD_WITH_THIS_DATA);
         }
-        return null;
+        return personRepo.save(new Person(name, password, phoneNumber, email));
     }
 
     @Override
@@ -37,20 +36,16 @@ public class PersonServiceImpl implements PersonService{
         if (role == null)
             UtilException.throwDefault(UtilException.ROLE_NOT_FOUND);
 
-        Person person = search(personName, phoneNumber, email);
+        Person person = find(personName, phoneNumber, email);
 
         person.getRoles().add(role);
         personRepo.save(person);
     }
 
     @Override
-    public Person search(String name, String phoneNumber, String email) throws Exception {
+    public Person find(String name, String phoneNumber, String email) throws Exception {
         String[] params = { name, phoneNumber, email};
         UtilParam.throwExceptionIfStringParamsAreNotFilled(params);
-        Person personFinded = personRepo.findByNameAndPhoneNumberAndEmail(name, phoneNumber, email);
-        if (personFinded == null) {
-            UtilException.throwDefault(UtilException.USER_NOT_FOUND);
-        }
-        return personFinded;
+        return personRepo.findByNameAndPhoneNumberAndEmail(name, phoneNumber, email);
     }
 }
