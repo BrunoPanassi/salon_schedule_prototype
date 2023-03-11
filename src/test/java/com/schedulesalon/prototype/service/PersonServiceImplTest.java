@@ -87,7 +87,8 @@ class PersonServiceImplTest {
     @Disabled
     void shouldAddOneSingleRole() throws Exception {
         // given
-        String[] rolesToAdd = {"MANAGER"};
+        Role.TypeRole[] rolesToAdd = {Role.TypeRole.MANAGER};
+        String stringRole = rolesToAdd[0].getTypeRole();
         Role role = new Role(rolesToAdd[0]);
         Role[] personRoles = {role};
 
@@ -99,7 +100,7 @@ class PersonServiceImplTest {
         );
 
         given(personService.find(michael)).willReturn(michael);
-        given(roleRepo.findByType(rolesToAdd[0])).willReturn(role);
+        given(roleRepo.findByType(stringRole)).willReturn(role);
 
         // when
         personService.addRole(michael, role);
@@ -114,6 +115,6 @@ class PersonServiceImplTest {
 
     @Test
     @Disabled
-    void shouldFindPerson() throws Exception {
+    void shouldAddMultiRoles() throws Exception {
     }
 }
