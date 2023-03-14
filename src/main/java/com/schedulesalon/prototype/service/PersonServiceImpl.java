@@ -33,15 +33,55 @@ public class PersonServiceImpl implements PersonService{
     @Override
     public void addRole(Person person, Role role) throws Exception {
         Role roleFinded = roleRepo.findByType(role.getType());
+        checkIfRoleExists(roleFinded);
+        Person personFinded = verifyPerson(person);
+        personFinded.getRoles().add(role);
+        personRepo.save(person);
+    }
+
+    private void checkIfRoleExists(Role roleFinded) throws Exception {
         if (roleFinded == null)
             UtilException.throwDefault(UtilException.ROLE_NOT_FOUND);
+    }
 
+    @Override
+    public void addRoles(Person person, Role[] roles) throws Exception {
+        verifyRoles(roles);
+        Person personFinded = verifyPerson(person);
+        Arrays.stream(roles).forEach(role -> {
+            try {
+                checkIfRoleExists(role);
+                personFinded.getRoles().add(role);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        personRepo.save(personFinded);
+    }
+
+    private Person verifyPerson(Person person) throws Exception {
         Person personFinded = find(person);
         if (personFinded == null)
             UtilException.throwDefault(UtilException.USER_NOT_FOUND);
+        return personFinded;
+    }
 
-        person.getRoles().add(role);
-        personRepo.save(person);
+    private void verifyRoles(Role[] roles) throws Exception {
+        if(Arrays.stream(roles).count() == 0) {
+            UtilException.throwDefault(UtilException.ROLES_WITH_COUNT_ZERO);
+        }
+        if(isClientRoleAmongOtherRoles(roles) == true) {
+            UtilException.throwDefault(UtilException.ROLE_CLIENT_AMONG_OTHER_ROLES);
+        }
+    }
+
+    private Boolean isClientRoleAmongOtherRoles(Role[] roles) {
+        if (Arrays.stream(roles).anyMatch(role -> role.getType() == Role.TypeRole.CLIENT.getTypeRole()
+            &&
+            Arrays.stream(roles).count() > 1)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

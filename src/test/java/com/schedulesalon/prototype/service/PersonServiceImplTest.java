@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -114,7 +116,35 @@ class PersonServiceImplTest {
     }
 
     @Test
-    @Disabled
     void shouldAddMultiRoles() throws Exception {
+        //given
+        Role.TypeRole[] rolesToAdd = {
+                Role.TypeRole.PROFESSIONAL,
+                Role.TypeRole.MANAGER
+        };
+
+        Person michael = new Person(
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
+        );
+
+        given(personService.find(michael)).willReturn(michael);
+
+        Role[] roles = Arrays
+                .stream(rolesToAdd)
+                .map(typeRole -> new Role(typeRole))
+                .toArray(Role[]::new);
+
+        //when
+        personService.addRoles(michael, roles);
+
+        //then
+        ArgumentCaptor<Person> personArgumentCaptor = ArgumentCaptor.forClass(Person.class);
+        verify(personRepo).save(personArgumentCaptor.capture());
+        Person capturedPerson = personArgumentCaptor.getValue();
+
+        assertArrayEquals(capturedPerson.getRoles().toArray(), roles);
     }
 }
