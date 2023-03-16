@@ -31,15 +31,6 @@ public class PersonServiceImpl implements PersonService{
     }
 
     @Override
-    public void addRole(Person person, Role role) throws Exception {
-        Role roleFinded = roleRepo.findByType(role.getType());
-        checkIfRoleExists(roleFinded);
-        Person personFinded = verifyPerson(person);
-        personFinded.getRoles().add(role);
-        personRepo.save(person);
-    }
-
-    @Override
     public void addRoles(Person person, Role[] roles) throws Exception {
         verifyRoles(roles);
         Person personFinded = verifyPerson(person);
@@ -54,6 +45,13 @@ public class PersonServiceImpl implements PersonService{
         personRepo.save(personFinded);
     }
 
+    @Override
+    public Person find(Person person) throws Exception {
+        String[] params = { person.getName(), person.getPhoneNumber(), person.getEmail()};
+        UtilParam.throwExceptionIfStringParamsAreNotFilled(params);
+        return personRepo.findByNameAndPhoneNumberAndEmail(person.getName(), person.getPhoneNumber(), person.getEmail());
+    }
+
     private Person verifyPerson(Person person) throws Exception {
         Person personFinded = find(person);
         if (personFinded == null)
@@ -65,18 +63,14 @@ public class PersonServiceImpl implements PersonService{
         if(roles.length == 0) {
             UtilException.throwDefault(UtilException.ROLES_WITH_COUNT_ZERO);
         }
-        if(isClientRoleAmongOtherRoles(roles) == true) {
+        if(isClientRoleAmongOtherRoles(roles)) {
             UtilException.throwDefault(UtilException.ROLE_CLIENT_AMONG_OTHER_ROLES);
         }
     }
 
     private Boolean isClientRoleAmongOtherRoles(Role[] roles) {
-        if (roles.length > 1
-            &&
-            Arrays.stream(roles).anyMatch(role -> role.getType() == Role.TypeRole.CLIENT.getTypeRole())) {
-            return true;
-        }
-        return false;
+        return roles.length > 1 &&
+            Arrays.stream(roles).anyMatch(role -> role.getType() == Role.TypeRole.CLIENT.getTypeRole());
     }
 
     private void checkIfRoleExists(Role role) throws Exception {
@@ -85,10 +79,10 @@ public class PersonServiceImpl implements PersonService{
             UtilException.throwDefault(UtilException.ROLE_NOT_FOUND);
     }
 
-    @Override
-    public Person find(Person person) throws Exception {
-        String[] params = { person.getName(), person.getPhoneNumber(), person.getEmail()};
-        UtilParam.throwExceptionIfStringParamsAreNotFilled(params);
-        return personRepo.findByNameAndPhoneNumberAndEmail(person.getName(), person.getPhoneNumber(), person.getEmail());
+    public Role[] typeRolesToRoles(Role.TypeRole[] typeRoles) {
+         return Arrays
+                .stream(typeRoles)
+                .map(typeRole -> new Role(typeRole))
+                .toArray(Role[]::new);
     }
 }

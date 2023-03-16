@@ -87,12 +87,9 @@ class PersonServiceImplTest {
 
     @Test
     @Disabled
-    void shouldAddOneSingleRole() throws Exception {
+    void shouldAddManagerRole() throws Exception {
         // given
         Role.TypeRole[] rolesToAdd = {Role.TypeRole.MANAGER};
-        String stringRole = rolesToAdd[0].getTypeRole();
-        Role role = new Role(rolesToAdd[0]);
-        Role[] personRoles = {role};
 
         Person michael = new Person(
                 "Michael Jackson",
@@ -101,22 +98,26 @@ class PersonServiceImplTest {
                 "michael@hotmail.com"
         );
 
+        Role[] roles = personService.typeRolesToRoles(rolesToAdd);
+
         given(personService.find(michael)).willReturn(michael);
-        given(roleRepo.findByType(stringRole)).willReturn(role);
+        Arrays.stream(roles).forEach(role -> {
+            given(roleRepo.findByType(role.getType())).willReturn(role);
+        });
 
         // when
-        personService.addRole(michael, role);
+        personService.addRoles(michael, roles);
 
         // then
         ArgumentCaptor<Person> personArgumentCaptor = ArgumentCaptor.forClass(Person.class);
         verify(personRepo).save(personArgumentCaptor.capture());
         Person capturedPerson = personArgumentCaptor.getValue();
 
-        assertArrayEquals(capturedPerson.getRoles().toArray(), personRoles);
+        assertArrayEquals(capturedPerson.getRoles().toArray(), roles);
     }
 
     @Test
-    void shouldAddMultiRoles() throws Exception {
+    void shouldAddManagerAndProfessionalRoles() throws Exception {
         //given
         Role.TypeRole[] rolesToAdd = {
                 Role.TypeRole.PROFESSIONAL,
@@ -130,10 +131,7 @@ class PersonServiceImplTest {
                 "michael@hotmail.com"
         );
 
-        Role[] roles = Arrays
-                .stream(rolesToAdd)
-                .map(typeRole -> new Role(typeRole))
-                .toArray(Role[]::new);
+        Role[] roles = personService.typeRolesToRoles(rolesToAdd);
 
         given(personService.find(michael)).willReturn(michael);
         Arrays.stream(roles).forEach(role -> {
@@ -149,5 +147,47 @@ class PersonServiceImplTest {
         Person capturedPerson = personArgumentCaptor.getValue();
 
         assertArrayEquals(capturedPerson.getRoles().toArray(), roles);
+    }
+
+    @Test
+    void shouldNotAddClientAmongOtherRoles() throws Exception {
+        //given
+        Role.TypeRole[] rolesToAdd = {
+                Role.TypeRole.PROFESSIONAL,
+                Role.TypeRole.CLIENT
+        };
+
+        Person michael = new Person(
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
+        );
+
+        Role[] roles = personService.typeRolesToRoles(rolesToAdd);
+
+        //when
+        //then
+        assertThatThrownBy(() -> personService.addRoles(michael, roles))
+                .isInstanceOf(Exception.class)
+                .hasMessageContaining(UtilException.ROLE_CLIENT_AMONG_OTHER_ROLES);
+    }
+
+    @Test
+    @Disabled
+    void shouldAddRoleProfessionalAndCreateDataOnTableProfessional() throws Exception {
+
+    }
+
+    @Test
+    @Disabled
+    void shouldAddRoleManagerAndCreateDataOnTableManager() throws Exception {
+
+    }
+
+    @Test
+    @Disabled
+    void shouldAddRoleClientAndCreateDataOnTableClient() throws Exception {
+
     }
 }
