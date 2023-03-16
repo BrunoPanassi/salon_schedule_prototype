@@ -130,12 +130,15 @@ class PersonServiceImplTest {
                 "michael@hotmail.com"
         );
 
-        given(personService.find(michael)).willReturn(michael);
-
         Role[] roles = Arrays
                 .stream(rolesToAdd)
                 .map(typeRole -> new Role(typeRole))
                 .toArray(Role[]::new);
+
+        given(personService.find(michael)).willReturn(michael);
+        Arrays.stream(roles).forEach(role -> {
+            given(roleRepo.findByType(role.getType())).willReturn(role);
+        });
 
         //when
         personService.addRoles(michael, roles);

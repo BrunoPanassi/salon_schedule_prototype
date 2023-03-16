@@ -39,11 +39,6 @@ public class PersonServiceImpl implements PersonService{
         personRepo.save(person);
     }
 
-    private void checkIfRoleExists(Role roleFinded) throws Exception {
-        if (roleFinded == null)
-            UtilException.throwDefault(UtilException.ROLE_NOT_FOUND);
-    }
-
     @Override
     public void addRoles(Person person, Role[] roles) throws Exception {
         verifyRoles(roles);
@@ -67,7 +62,7 @@ public class PersonServiceImpl implements PersonService{
     }
 
     private void verifyRoles(Role[] roles) throws Exception {
-        if(Arrays.stream(roles).count() == 0) {
+        if(roles.length == 0) {
             UtilException.throwDefault(UtilException.ROLES_WITH_COUNT_ZERO);
         }
         if(isClientRoleAmongOtherRoles(roles) == true) {
@@ -76,12 +71,18 @@ public class PersonServiceImpl implements PersonService{
     }
 
     private Boolean isClientRoleAmongOtherRoles(Role[] roles) {
-        if (Arrays.stream(roles).anyMatch(role -> role.getType() == Role.TypeRole.CLIENT.getTypeRole()
+        if (roles.length > 1
             &&
-            Arrays.stream(roles).count() > 1)) {
+            Arrays.stream(roles).anyMatch(role -> role.getType() == Role.TypeRole.CLIENT.getTypeRole())) {
             return true;
         }
         return false;
+    }
+
+    private void checkIfRoleExists(Role role) throws Exception {
+        Role roleFinded = roleRepo.findByType(role.getType());
+        if (roleFinded == null)
+            UtilException.throwDefault(UtilException.ROLE_NOT_FOUND);
     }
 
     @Override
