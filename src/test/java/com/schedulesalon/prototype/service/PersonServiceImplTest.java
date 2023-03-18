@@ -12,18 +12,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -128,7 +129,34 @@ class PersonServiceImplTest {
 
     @Test
     void shouldNotAddManagerRoleAndNotSaveManagerTableBecauseAlreadyExistsAManagerRole() throws Exception {
+        // given
+        Role.TypeRole[] rolesToAdd = {Role.TypeRole.MANAGER};
+        String[] rolesParamsToException = {Role.TypeRole.MANAGER.getTypeRole()};
+        Person mockPerson = Mockito.mock(Person.class);
 
+        Person michael = new Person(
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
+        );
+
+        Role[] roles = personService.typeRolesToRoles(rolesToAdd);
+
+        given(personService.find(michael)).willReturn(michael);
+        Arrays.stream(roles).forEach(role -> {
+            given(roleRepo.findByType(role.getType())).willReturn(role);
+        });
+
+        // when
+        personService.addRoles(michael, roles);
+
+        // then
+        assertThatThrownBy(() -> personService.addRoles(michael, roles))
+                .isInstanceOf(Exception.class)
+                .hasMessageContaining(
+                        UtilException.ExceptionBuilder(UtilException.PERSON_ALREADY_HAS_THIS_ROLE, rolesParamsToException)
+                );
     }
 
     @Test
