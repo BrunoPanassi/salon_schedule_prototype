@@ -36,4 +36,8 @@ public class Professional {
 
     @NotNull
     private Boolean allowScheduleInTime;
+
+    public Professional(Person person) {
+        this.person = person;
+    }
 }

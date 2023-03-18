@@ -1,5 +1,6 @@
 package com.schedulesalon.prototype.service;
 
+import com.schedulesalon.prototype.model.Client;
 import com.schedulesalon.prototype.model.Person;
 import com.schedulesalon.prototype.model.Role;
 import com.schedulesalon.prototype.repo.PersonRepo;
@@ -20,6 +21,7 @@ public class PersonServiceImpl implements PersonService{
 
     private final RoleRepo roleRepo;
     private final PersonRepo personRepo;
+    private final RoleServiceImpl roleService;
 
     @Override
     public Person save(Person person) throws Exception {
@@ -37,7 +39,9 @@ public class PersonServiceImpl implements PersonService{
         Arrays.stream(roles).forEach(role -> {
             try {
                 checkIfRoleExists(role);
+                //TO DO: Verify if person has already that role
                 personFinded.getRoles().add(role);
+                roleService.eachRoleToEachOwnTable(personFinded, Role.TypeRole.valueOf(role.getType()));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

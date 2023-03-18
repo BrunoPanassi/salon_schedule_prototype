@@ -1,9 +1,9 @@
 package com.schedulesalon.prototype.service;
 
+import com.schedulesalon.prototype.model.Manager;
 import com.schedulesalon.prototype.model.Person;
 import com.schedulesalon.prototype.model.Role;
-import com.schedulesalon.prototype.repo.PersonRepo;
-import com.schedulesalon.prototype.repo.RoleRepo;
+import com.schedulesalon.prototype.repo.*;
 import com.schedulesalon.prototype.util.UtilException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,13 +33,19 @@ class PersonServiceImplTest {
     private PersonRepo personRepo;
     @Mock
     private RoleRepo roleRepo;
+    @Mock
+    private ClientRepo clientRepo;
+    @Mock
+    private ManagerRepo managerRepo;
+    @Mock
+    private ProfessionalRepo professionalRepo;
     private PersonServiceImpl personService;
     private RoleServiceImpl roleService;
 
     @BeforeEach
     void setUp() {
-        personService = new PersonServiceImpl(roleRepo, personRepo);
-        roleService = new RoleServiceImpl(roleRepo, personRepo);
+        roleService = new RoleServiceImpl(roleRepo, clientRepo, managerRepo, professionalRepo);
+        personService = new PersonServiceImpl(roleRepo, personRepo, roleService);
     }
 
     @Test
@@ -86,8 +92,7 @@ class PersonServiceImplTest {
     }
 
     @Test
-    @Disabled
-    void shouldAddManagerRole() throws Exception {
+    void shouldAddManagerRoleAndSaveManagerTable() throws Exception {
         // given
         Role.TypeRole[] rolesToAdd = {Role.TypeRole.MANAGER};
 
@@ -113,7 +118,27 @@ class PersonServiceImplTest {
         verify(personRepo).save(personArgumentCaptor.capture());
         Person capturedPerson = personArgumentCaptor.getValue();
 
+        ArgumentCaptor<Manager> managerArgumentCaptor = ArgumentCaptor.forClass(Manager.class);
+        verify(managerRepo).save(managerArgumentCaptor.capture());
+        Manager capturedManager = managerArgumentCaptor.getValue();
+
         assertArrayEquals(capturedPerson.getRoles().toArray(), roles);
+        assertThat(capturedManager.getPerson()).isEqualTo(michael);
+    }
+
+    @Test
+    void shouldNotAddManagerRoleAndNotSaveManagerTableBecauseAlreadyExistsAManagerRole() throws Exception {
+
+    }
+
+    @Test
+    void shouldNotAddRoleBecauseUserWasNotFound() throws Exception {
+
+    }
+
+    @Test
+    void shouldAddAnyRoleButNotFoundManagerWhenTryToSearchOne() throws Exception {
+
     }
 
     @Test
@@ -150,7 +175,7 @@ class PersonServiceImplTest {
     }
 
     @Test
-    void shouldNotAddClientAmongOtherRoles() throws Exception {
+    void shouldNotAddClientRoleAmongOtherRoles() throws Exception {
         //given
         Role.TypeRole[] rolesToAdd = {
                 Role.TypeRole.PROFESSIONAL,
@@ -176,7 +201,25 @@ class PersonServiceImplTest {
     @Test
     @Disabled
     void shouldAddRoleProfessionalAndCreateDataOnTableProfessional() throws Exception {
+        // given
+        Role.TypeRole[] rolesToAdd = {Role.TypeRole.PROFESSIONAL};
 
+        Person michael = new Person(
+                "Michael Scott",
+                "password123",
+                "18 997 666",
+                "michael@dundermifflin.com"
+        );
+
+        Role[] roles = personService.typeRolesToRoles(rolesToAdd);
+
+        given(personService.find(michael)).willReturn(michael);
+        Arrays.stream(roles).forEach(role -> {
+            given(roleRepo.findByType(role.getType())).willReturn(role);
+        });
+
+        // when
+        personService.addRoles(michael, roles);
     }
 
     @Test

@@ -12,6 +12,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Manager {
 
+    public static final String objectName = "Gestor";
+
     @Id
     @SequenceGenerator(name = "seq_manager", sequenceName = "seq_manager")
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_manager")
@@ -24,4 +26,7 @@ public class Manager {
     @OneToMany(mappedBy = "manager")
     private List<Salon> salons;
 
+    public Manager(Person person) {
+        this.person = person;
+    }
 }
