@@ -11,9 +11,9 @@ import javax.transaction.Transactional;
 public class RoleServiceImpl implements RoleService{
 
     private final RoleRepo roleRepo;
-    private final ClientRepo clientRepo;
-    private final ManagerRepo managerRepo;
-    private final ProfessionalRepo professionalRepo;
+    private final ManagerService managerService;
+    private final ClientService clientService;
+    private final ProfessionalService professionalService;
 
     @Override
     public Role saveRole(Role role) throws Exception {
@@ -30,21 +30,20 @@ public class RoleServiceImpl implements RoleService{
         return roleRepo.findByType(type);
     }
 
-    public void eachRoleToEachOwnTable(Person person, Role.TypeRole role) {
+    public void eachRoleToEachOwnTable(Person person, Role.TypeRole role) throws Exception {
         Role.TypeRole typeRole;
         switch (role) {
             case CLIENT:
                 Client client = new Client(person);
-                //TO DO: Each save change to implement override in service ckecking if data exists
-                clientRepo.save(client);
+                clientService.save(client);
                 break;
             case PROFESSIONAL:
                 Professional professional = new Professional(person);
-                professionalRepo.save(professional);
+                professionalService.save(professional);
                 break;
             case MANAGER:
                 Manager manager = new Manager(person);
-                managerRepo.save(manager);
+                managerService.save(manager);
                 break;
         }
     }

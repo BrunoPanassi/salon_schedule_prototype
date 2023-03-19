@@ -20,6 +20,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Person {
 
+    public static final String objectName = "Pessoa";
+
     @Id
     @SequenceGenerator(name = "seq_person", sequenceName = "seq_person")
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_person")

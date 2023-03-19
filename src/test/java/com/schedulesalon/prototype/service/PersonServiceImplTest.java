@@ -36,9 +36,16 @@ class PersonServiceImplTest {
     private PersonServiceImpl personService;
     private RoleServiceImpl roleService;
 
+    private ManagerService managerService;
+    private ClientService clientService;
+    private ProfessionalService professionalService;
+
     @BeforeEach
     void setUp() {
-        roleService = new RoleServiceImpl(roleRepo, clientRepo, managerRepo, professionalRepo);
+        managerService = new ManagerServiceImpl(managerRepo);
+        clientService = new ClientServiceImpl(clientRepo);
+        professionalService = new ProfessionalServiceImpl(professionalRepo);
+        roleService = new RoleServiceImpl(roleRepo, managerService, clientService, professionalService);
         personService = new PersonServiceImpl(roleRepo, personRepo, roleService);
     }
 

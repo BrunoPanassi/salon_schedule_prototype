@@ -14,7 +14,7 @@ import java.util.List;
 public class ManagerServiceImpl implements ManagerService{
     private final ManagerRepo managerRepo;
     @Override
-    public Manager saveManager(Manager manager) throws Exception {
+    public Manager save(Manager manager) throws Exception {
         Manager managerFinded = find(manager.getPerson());
         if (managerFinded != null) {
             UtilException.throwDefault(UtilException.THERE_IS_ALREADY_A_RECORD_WITH_THIS_DATA);
