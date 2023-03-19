@@ -1,23 +1,16 @@
 package com.schedulesalon.prototype.service;
 
-import com.schedulesalon.prototype.model.Manager;
-import com.schedulesalon.prototype.model.Person;
-import com.schedulesalon.prototype.model.Role;
+import com.schedulesalon.prototype.model.*;
 import com.schedulesalon.prototype.repo.*;
 import com.schedulesalon.prototype.util.UtilException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -72,7 +65,7 @@ class PersonServiceImplTest {
     }
 
     @Test
-    void shouldThrowErrorWhenTryToSavePerson() throws Exception {
+    void shouldNotSavePersonBecauseAlreadyHasAPersonWithThatData() throws Exception {
         // given
         Person michael = new Person(
                 "Michael Jackson",
@@ -93,9 +86,9 @@ class PersonServiceImplTest {
     }
 
     @Test
-    void shouldAddManagerRoleAndSaveManagerTable() throws Exception {
+    void shouldAddClientRoleAndSaveClientTable() throws Exception {
         // given
-        Role.TypeRole[] rolesToAdd = {Role.TypeRole.MANAGER};
+        Role.TypeRole[] rolesToAdd = {Role.TypeRole.CLIENT};
 
         Person michael = new Person(
                 "Michael Jackson",
@@ -119,12 +112,12 @@ class PersonServiceImplTest {
         verify(personRepo).save(personArgumentCaptor.capture());
         Person capturedPerson = personArgumentCaptor.getValue();
 
-        ArgumentCaptor<Manager> managerArgumentCaptor = ArgumentCaptor.forClass(Manager.class);
-        verify(managerRepo).save(managerArgumentCaptor.capture());
-        Manager capturedManager = managerArgumentCaptor.getValue();
+        ArgumentCaptor<Client> clientArgumentCaptor = ArgumentCaptor.forClass(Client.class);
+        verify(clientRepo).save(clientArgumentCaptor.capture());
+        Client capturedClient = clientArgumentCaptor.getValue();
 
         assertArrayEquals(capturedPerson.getRoles().toArray(), roles);
-        assertThat(capturedManager.getPerson()).isEqualTo(michael);
+        assertThat(capturedClient.getPerson()).isEqualTo(michael);
     }
 
     @Test
@@ -132,7 +125,6 @@ class PersonServiceImplTest {
         // given
         Role.TypeRole[] rolesToAdd = {Role.TypeRole.MANAGER};
         String[] rolesParamsToException = {Role.TypeRole.MANAGER.getTypeRole()};
-        Person mockPerson = Mockito.mock(Person.class);
 
         Person michael = new Person(
                 "Michael Jackson",
@@ -161,16 +153,28 @@ class PersonServiceImplTest {
 
     @Test
     void shouldNotAddRoleBecauseUserWasNotFound() throws Exception {
+        // given
+        Role.TypeRole[] rolesToAdd = {Role.TypeRole.MANAGER};
+        String[] rolesParamsToException = {Role.TypeRole.MANAGER.getTypeRole()};
 
+        Person michael = new Person(
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
+        );
+
+        Role[] roles = personService.typeRolesToRoles(rolesToAdd);
+        given(personService.find(michael)).willReturn(null);
+
+        // when then
+        assertThatThrownBy(() -> personService.addRoles(michael, roles))
+                .isInstanceOf(Exception.class)
+                .hasMessageContaining(UtilException.USER_NOT_FOUND);
     }
 
     @Test
-    void shouldAddAnyRoleButNotFoundManagerWhenTryToSearchOne() throws Exception {
-
-    }
-
-    @Test
-    void shouldAddManagerAndProfessionalRoles() throws Exception {
+    void shouldAddManagerAndProfessionalRolesAndSaveOnEachTable() throws Exception {
         //given
         Role.TypeRole[] rolesToAdd = {
                 Role.TypeRole.PROFESSIONAL,
@@ -199,7 +203,17 @@ class PersonServiceImplTest {
         verify(personRepo).save(personArgumentCaptor.capture());
         Person capturedPerson = personArgumentCaptor.getValue();
 
+        ArgumentCaptor<Professional> professionalArgumentCaptor = ArgumentCaptor.forClass(Professional.class);
+        verify(professionalRepo).save(professionalArgumentCaptor.capture());
+        Professional capturedProfessional = professionalArgumentCaptor.getValue();
+
+        ArgumentCaptor<Manager> managerArgumentCaptor = ArgumentCaptor.forClass(Manager.class);
+        verify(managerRepo).save(managerArgumentCaptor.capture());
+        Manager capturedManager = managerArgumentCaptor.getValue();
+
         assertArrayEquals(capturedPerson.getRoles().toArray(), roles);
+        assertThat(capturedProfessional.getPerson()).isEqualTo(michael);
+        assertThat(capturedManager.getPerson()).isEqualTo(michael);
     }
 
     @Test
@@ -227,38 +241,46 @@ class PersonServiceImplTest {
     }
 
     @Test
-    @Disabled
-    void shouldAddRoleProfessionalAndCreateDataOnTableProfessional() throws Exception {
+    void shouldThrowExceptionOfRolesWithCountZero() throws Exception {
         // given
-        Role.TypeRole[] rolesToAdd = {Role.TypeRole.PROFESSIONAL};
+        Role[] roles = {};
+        String[] rolesParamsToException = {Role.TypeRole.MANAGER.getTypeRole()};
 
         Person michael = new Person(
-                "Michael Scott",
-                "password123",
-                "18 997 666",
-                "michael@dundermifflin.com"
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
+        );
+
+        // when then
+        assertThatThrownBy(() -> personService.addRoles(michael, roles))
+                .isInstanceOf(Exception.class)
+                .hasMessageContaining(UtilException.ROLES_WITH_COUNT_ZERO);
+    }
+
+    @Test
+    void shouldThrowRoleNotFound() throws Exception {
+        // given
+        Role.TypeRole[] rolesToAdd = {Role.TypeRole.MANAGER};
+        String[] rolesParamsToException = {Role.TypeRole.MANAGER.getTypeRole()};
+
+        Person michael = new Person(
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
         );
 
         Role[] roles = personService.typeRolesToRoles(rolesToAdd);
-
         given(personService.find(michael)).willReturn(michael);
         Arrays.stream(roles).forEach(role -> {
-            given(roleRepo.findByType(role.getType())).willReturn(role);
+            given(roleRepo.findByType(role.getType())).willReturn(null);
         });
 
-        // when
-        personService.addRoles(michael, roles);
-    }
-
-    @Test
-    @Disabled
-    void shouldAddRoleManagerAndCreateDataOnTableManager() throws Exception {
-
-    }
-
-    @Test
-    @Disabled
-    void shouldAddRoleClientAndCreateDataOnTableClient() throws Exception {
-
+        // when then
+        assertThatThrownBy(() -> personService.addRoles(michael, roles))
+                .isInstanceOf(Exception.class)
+                .hasMessageContaining(UtilException.ROLE_NOT_FOUND);
     }
 }
