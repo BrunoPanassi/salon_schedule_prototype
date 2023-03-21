@@ -24,5 +24,9 @@ public class Client {
     @OneToMany(mappedBy = "client")
     private List<Task> tasks;
 
+    public Client(Person person) {
+        this.person = person;
+    }
+
 
 }

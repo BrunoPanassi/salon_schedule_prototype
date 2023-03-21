@@ -15,6 +15,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Professional {
 
+    public static final String objectName = "Profissional";
+
     @Id
     @SequenceGenerator(name = "seq_professional", sequenceName = "seq_professional")
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_professional")
@@ -36,4 +38,8 @@ public class Professional {
 
     @NotNull
     private Boolean allowScheduleInTime;
+
+    public Professional(Person person) {
+        this.person = person;
+    }
 }

@@ -1,9 +1,7 @@
 package com.schedulesalon.prototype.service;
 
-import com.schedulesalon.prototype.model.Person;
-import com.schedulesalon.prototype.model.Role;
-import com.schedulesalon.prototype.repo.PersonRepo;
-import com.schedulesalon.prototype.repo.RoleRepo;
+import com.schedulesalon.prototype.model.*;
+import com.schedulesalon.prototype.repo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +11,9 @@ import javax.transaction.Transactional;
 public class RoleServiceImpl implements RoleService{
 
     private final RoleRepo roleRepo;
-    private final PersonRepo personRepo;
+    private final ManagerService managerService;
+    private final ClientService clientService;
+    private final ProfessionalService professionalService;
 
     @Override
     public Role saveRole(Role role) throws Exception {
@@ -28,5 +28,23 @@ public class RoleServiceImpl implements RoleService{
     @Override
     public Role findRole(String type) {
         return roleRepo.findByType(type);
+    }
+
+    public void eachRoleToEachOwnTable(Person person, Role.TypeRole role) throws Exception {
+        Role.TypeRole typeRole;
+        switch (role) {
+            case CLIENT:
+                Client client = new Client(person);
+                clientService.save(client);
+                break;
+            case PROFESSIONAL:
+                Professional professional = new Professional(person);
+                professionalService.save(professional);
+                break;
+            case MANAGER:
+                Manager manager = new Manager(person);
+                managerService.save(manager);
+                break;
+        }
     }
 }

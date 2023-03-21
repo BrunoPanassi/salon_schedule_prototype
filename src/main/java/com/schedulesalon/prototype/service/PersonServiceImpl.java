@@ -1,5 +1,6 @@
 package com.schedulesalon.prototype.service;
 
+import com.schedulesalon.prototype.model.Client;
 import com.schedulesalon.prototype.model.Person;
 import com.schedulesalon.prototype.model.Role;
 import com.schedulesalon.prototype.repo.PersonRepo;
@@ -20,6 +21,7 @@ public class PersonServiceImpl implements PersonService{
 
     private final RoleRepo roleRepo;
     private final PersonRepo personRepo;
+    private final RoleServiceImpl roleService;
 
     @Override
     public Person save(Person person) throws Exception {
@@ -37,7 +39,8 @@ public class PersonServiceImpl implements PersonService{
         Arrays.stream(roles).forEach(role -> {
             try {
                 checkIfRoleExists(role);
-                personFinded.getRoles().add(role);
+                verifyIfPersonHasThatRoleIfDontAddIt(personFinded, role);
+                roleService.eachRoleToEachOwnTable(personFinded, Role.TypeRole.valueOf(role.getType()));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -50,6 +53,21 @@ public class PersonServiceImpl implements PersonService{
         String[] params = { person.getName(), person.getPhoneNumber(), person.getEmail()};
         UtilParam.throwExceptionIfStringParamsAreNotFilled(params);
         return personRepo.findByNameAndPhoneNumberAndEmail(person.getName(), person.getPhoneNumber(), person.getEmail());
+    }
+
+    private void verifyIfPersonHasThatRoleIfDontAddIt(Person person, Role role) throws Exception {
+        if(personHasThatRole(person, role) == false) {
+            person.getRoles().add(role);
+        } else {
+            String [] params = {role.getType()};
+            UtilException.throwDefault(
+                    UtilException.ExceptionBuilder(UtilException.PERSON_ALREADY_HAS_THIS_ROLE, params)
+            );
+        }
+    }
+
+    private Boolean personHasThatRole(Person person, Role role) {
+        return person.getRoles().stream().anyMatch(personRole -> personRole.getType().equals(role.getType()));
     }
 
     private Person verifyPerson(Person person) throws Exception {

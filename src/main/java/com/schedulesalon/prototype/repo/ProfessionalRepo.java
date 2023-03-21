@@ -1,17 +1,17 @@
 package com.schedulesalon.prototype.repo;
 
-import com.schedulesalon.prototype.model.Client;
+import com.schedulesalon.prototype.model.Professional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ClientRepo extends JpaRepository<Client, Long> {
+public interface ProfessionalRepo extends JpaRepository<Professional, Long> {
     @Query(value = """
             SELECT
-            c
-            FROM Client c
-            JOIN c.person p
+            p
+            FROM Professional p
+            JOIN p.person p
             where p.id = :person_id
             """)
-    Client findClientByPersonId(@Param("person_id") Long personId);
+    Professional findProfessionalByPersonId(@Param("person_id") Long personId);
 }

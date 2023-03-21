@@ -24,4 +24,7 @@ public class Manager {
     @OneToMany(mappedBy = "manager")
     private List<Salon> salons;
 
+    public Manager(Person person) {
+        this.person = person;
+    }
 }
