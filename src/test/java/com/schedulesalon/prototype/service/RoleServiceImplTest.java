@@ -1,6 +1,6 @@
 package com.schedulesalon.prototype.service;
 
-import com.schedulesalon.prototype.model.Role;
+import com.schedulesalon.prototype.model.*;
 import com.schedulesalon.prototype.repo.ClientRepo;
 import com.schedulesalon.prototype.repo.ManagerRepo;
 import com.schedulesalon.prototype.repo.ProfessionalRepo;
@@ -76,14 +76,74 @@ class RoleServiceImplTest {
     }
 
     @Test
-    void itShouldSaveClientTable() {
+    void itShouldSaveClientTable() throws Exception {
+        // given
+        Person michael = new Person(
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
+        );
+
+        Client client = new Client(michael);
+
+        Role.TypeRole clientTypeRole = Role.TypeRole.CLIENT;
+
+        //when
+        roleService.eachRoleToEachOwnTable(michael, clientTypeRole);
+
+        //then
+        ArgumentCaptor<Client> clientArgumentCaptor = ArgumentCaptor.forClass(Client.class);
+        verify(clientRepo).save(clientArgumentCaptor.capture());
+        Client capturedClient = clientArgumentCaptor.getValue();
+        assertThat(capturedClient).isEqualTo(client);
     }
 
     @Test
-    void itShouldSaveProfessionalTable() {
+    void itShouldSaveProfessionalTable() throws Exception {
+        // given
+        Person michael = new Person(
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
+        );
+
+        Professional professional = new Professional(michael);
+
+        Role.TypeRole clientTypeRole = Role.TypeRole.PROFESSIONAL;
+
+        //when
+        roleService.eachRoleToEachOwnTable(michael, clientTypeRole);
+
+        //then
+        ArgumentCaptor<Professional> professionalArgumentCaptor = ArgumentCaptor.forClass(Professional.class);
+        verify(professionalRepo).save(professionalArgumentCaptor.capture());
+        Professional capturedProfessional = professionalArgumentCaptor.getValue();
+        assertThat(capturedProfessional).isEqualTo(professional);
     }
 
     @Test
-    void itShouldSaveManagerTable() {
+    void itShouldSaveManagerTable() throws Exception {
+        // given
+        Person michael = new Person(
+                "Michael Jackson",
+                "billiejean",
+                "18 997 555",
+                "michael@hotmail.com"
+        );
+
+        Manager manager = new Manager(michael);
+
+        Role.TypeRole clientTypeRole = Role.TypeRole.MANAGER;
+
+        //when
+        roleService.eachRoleToEachOwnTable(michael, clientTypeRole);
+
+        //then
+        ArgumentCaptor<Manager> managerArgumentCaptor = ArgumentCaptor.forClass( Manager.class);
+        verify(managerRepo).save(managerArgumentCaptor.capture());
+        Manager capturedManager = managerArgumentCaptor.getValue();
+        assertThat(capturedManager).isEqualTo(manager);
     }
 }
