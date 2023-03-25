@@ -3,13 +3,14 @@ package com.schedulesalon.prototype.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Data
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 public class SalonType {
 
@@ -22,4 +23,11 @@ public class SalonType {
 
     @OneToMany(mappedBy = "salonType")
     private List<Salon> salons;
+
+    @ManyToMany
+    private Collection<Job> job = new ArrayList<>();
+
+    public SalonType(String description) {
+        this.description = description;
+    }
 }
