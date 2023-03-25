@@ -16,6 +16,12 @@ public class UtilParam {
         }
     }
 
+    public static void throwExceptionIfObjectParamIsNull(Object object) throws Exception {
+        if (object == null) {
+            UtilException.throwDefault(UtilException.ALL_PARAMS_ARE_NOT_FILLED);
+        }
+    }
+
     public static Long stringParamsCount(Object[] params) {
         return Arrays.stream(params).count();
     }
