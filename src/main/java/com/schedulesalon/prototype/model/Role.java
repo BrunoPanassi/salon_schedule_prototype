@@ -30,6 +30,8 @@ public class Role {
         }
     }
 
+    public static final String objectName = "Cargo";
+
     @Id
     @SequenceGenerator(name = "seq_role", sequenceName = "seq_role")
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_role")

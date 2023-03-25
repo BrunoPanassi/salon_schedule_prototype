@@ -2,6 +2,7 @@ package com.schedulesalon.prototype.service;
 
 import com.schedulesalon.prototype.model.*;
 import com.schedulesalon.prototype.repo.*;
+import com.schedulesalon.prototype.util.UtilException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +17,20 @@ public class RoleServiceImpl implements RoleService{
     private final ProfessionalService professionalService;
 
     @Override
-    public Role saveRole(Role role) throws Exception {
+    public Role save(Role role) throws Exception {
         String type = role.getType();
         Role findedRole = roleRepo.findByType(type);
+        String[] exceptionParams = {Role.objectName};
         if (findedRole != null) {
-            throw new Exception("Esta Role já existe");
+            UtilException.throwDefault(
+                    UtilException.ExceptionBuilder(UtilException.THERE_IS_ALREADY_A_RECORD_WITH_THIS_DATA_WITH_PARAM, exceptionParams)
+            );
         }
         return roleRepo.save(role);
     }
 
     @Override
-    public Role findRole(String type) {
+    public Role find(String type) {
         return roleRepo.findByType(type);
     }
 
