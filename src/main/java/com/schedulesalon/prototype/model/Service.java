@@ -27,13 +27,13 @@ public class Service {
     private Salon salon;
 
     @ManyToOne
-    @JoinColumn(name = "service_type_id")
-    private ServiceType serviceType;
+    @JoinColumn(name = "job_id")
+    private Job job;
 
     private String description;
 
     private Double price;
 
     @NotNull
-    private Long timeExecutionAverage; //In minutes
+    private Long timeExecutionAverage; //TO DO: In minutes
 }
