@@ -3,6 +3,9 @@ package com.schedulesalon.prototype.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
@@ -19,7 +22,9 @@ public class Job {
 
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "job_type_id")
-    private JobType jobType;
+    @OneToMany(mappedBy = "job")
+    private List<Service> services;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<SalonType> salonType = new ArrayList<>();
 }
