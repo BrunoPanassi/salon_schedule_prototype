@@ -1,5 +1,6 @@
 package com.schedulesalon.prototype.service;
 
+import com.schedulesalon.prototype.model.Job;
 import com.schedulesalon.prototype.model.Person;
 import com.schedulesalon.prototype.model.Professional;
 import com.schedulesalon.prototype.repo.ProfessionalRepo;
@@ -13,7 +14,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.BDDMockito.given;
 
@@ -91,7 +95,7 @@ class ProfessionalServiceImplTest {
 
     @Test
     @Disabled
-    void itShouldRegisterWhichJobsTheProfessionalHave() {
+    void itShouldRegisterWhichJobsTheProfessionalHave() throws Exception {
         //given
         Person person = new Person(
                 "Dwight Schrute",
@@ -100,6 +104,21 @@ class ProfessionalServiceImplTest {
                 "dwight@dundermifflin.com"
         );
         Professional professional = new Professional(person);
+
+        Job cabeleleiro = new Job("Cabeleleiro");
+        Job barbeiro = new Job("Barbeiro");
+        Job[] jobs = {cabeleleiro, barbeiro};
+
+        //when
+        professional.setJobs(List.of(jobs));
+        professionalService.save(professional);
+
+        //then
+        ArgumentCaptor<Professional> professionalArgumentCaptor = ArgumentCaptor.forClass(Professional.class);
+        verify(professionalRepo).save(professionalArgumentCaptor.capture());
+        Professional capturedProfessional = professionalArgumentCaptor.getValue();
+
+        assertArrayEquals(capturedProfessional.getJobs().toArray(), jobs);
     }
 
     @Test
