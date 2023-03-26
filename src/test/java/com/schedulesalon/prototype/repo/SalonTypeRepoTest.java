@@ -58,19 +58,14 @@ class SalonTypeRepoTest {
     @Test
     void itShouldFindSalonTypeByJobDescription() {
         //given
-        String cabeleleiroDescription = "CABELELEIRO";
-        String barbeiroDescription = "BARBEIRO";
-
-        Job cabeleleiro = new Job(cabeleleiroDescription);
-        Job barbeiro = new Job(barbeiroDescription);
+        Job cabeleleiro = new Job("CABELELEIRO");
+        Job barbeiro = new Job("BARBEIRO");
 
         jobRepo.save(cabeleleiro);
         jobRepo.save(barbeiro);
 
         Job[] jobs = {cabeleleiro, barbeiro};
-
-        String barbeariaDescription = "BARBEARIA";
-        SalonType barbearia = new SalonType(barbeariaDescription);
+        SalonType barbearia = new SalonType("BARBEARIA");
         barbearia.setJob(List.of(jobs));
 
         salonTypeRepo.save(barbearia);
@@ -85,20 +80,15 @@ class SalonTypeRepoTest {
     @Test
     void itShoulNotdFindSalonTypeByJobDescription() {
         //given
-        String cabeleleiroDescription = "CABELELEIRO";
-        String barbeiroDescription = "BARBEIRO";
         String nonExistentDescription = "MAQUEADOR";
-
-        Job cabeleleiro = new Job(cabeleleiroDescription);
-        Job barbeiro = new Job(barbeiroDescription);
+        Job cabeleleiro = new Job("CABELELEIRO");
+        Job barbeiro = new Job("BARBEIRO");
 
         jobRepo.save(cabeleleiro);
         jobRepo.save(barbeiro);
 
         Job[] jobs = {cabeleleiro, barbeiro};
-
-        String barbeariaDescription = "BARBEARIA";
-        SalonType barbearia = new SalonType(barbeariaDescription);
+        SalonType barbearia = new SalonType("BARBEARIA");
         barbearia.setJob(List.of(jobs));
 
         salonTypeRepo.save(barbearia);
