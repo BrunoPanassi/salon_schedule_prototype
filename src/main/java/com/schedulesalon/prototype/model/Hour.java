@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -18,9 +19,9 @@ public class Hour {
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_hour")
     private Long id;
 
-    private Date begin;
+    private LocalDateTime begin;
 
-    private Date end;
+    private LocalDateTime end;
 
     @ManyToOne
     @JoinColumn(name = "professional_id")
@@ -31,8 +32,14 @@ public class Hour {
     private Schedule schedule;
 
     @NotNull
-    private String status;
+    private String status; //TODO: An Enum
 
     @NotNull
-    private Long confirmTimeLimit; // In minutes
+    private Long confirmTimeLimit; //TODO: In minutes
+
+    public Hour (LocalDateTime begin, LocalDateTime end, Professional professional) {
+        this.begin = begin;
+        this.end = end;
+        this.professional = professional;
+    }
 }
