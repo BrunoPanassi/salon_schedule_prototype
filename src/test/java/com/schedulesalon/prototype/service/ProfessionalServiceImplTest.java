@@ -3,6 +3,7 @@ package com.schedulesalon.prototype.service;
 import com.schedulesalon.prototype.hour.AvailableDate;
 import com.schedulesalon.prototype.model.*;
 import com.schedulesalon.prototype.repo.*;
+import com.schedulesalon.prototype.util.UtilDate;
 import com.schedulesalon.prototype.util.UtilException;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
@@ -231,14 +232,20 @@ class ProfessionalServiceImplTest {
     @Test
     void itShouldRegisterTheAvailableHours() throws Exception {
         //given
+        int year = UtilDate.actualDate.getYear();
+        int month = UtilDate.actualDate.getMonthValue();
+        int tomorrow = UtilDate.actualDate.getDayOfMonth() + 1;
+
         AvailableDate availableDate = new AvailableDate(
-                31,
-                3,
-                2023,
+                tomorrow,
+                month,
+                year,
                 8,
                 12,
                 13,
                 18,
+                0,
+                0,
                 0
         );
         Person personToBeTheProfessional = new Person(
@@ -250,48 +257,48 @@ class ProfessionalServiceImplTest {
         Professional professional = new Professional(personToBeTheProfessional);
         List<Hour> hoursToBeChecked = List.of(new Hour[]{
                 new Hour(
-                        LocalDateTime.of(2023, 3, 31, 8, 0),
-                        LocalDateTime.of(2023, 3, 31, 9, 0),
+                        LocalDateTime.of(year, month, tomorrow, 8, 0),
+                        LocalDateTime.of(year, month, tomorrow, 9, 0),
                         professional
                 ),
                 new Hour(
-                        LocalDateTime.of(2023, 3, 31, 9, 0),
-                        LocalDateTime.of(2023, 3, 31, 10, 0),
+                        LocalDateTime.of(year, month, tomorrow, 9, 0),
+                        LocalDateTime.of(year, month, tomorrow, 10, 0),
                         professional
                 ),
                 new Hour(
-                        LocalDateTime.of(2023, 3, 31, 10, 0),
-                        LocalDateTime.of(2023, 3, 31, 11, 0),
+                        LocalDateTime.of(year, month, tomorrow, 10, 0),
+                        LocalDateTime.of(year, month, tomorrow, 11, 0),
                         professional
                 ),
                 new Hour(
-                        LocalDateTime.of(2023, 3, 31, 11, 0),
-                        LocalDateTime.of(2023, 3, 31, 12, 0),
+                        LocalDateTime.of(year, month, tomorrow, 11, 0),
+                        LocalDateTime.of(year, month, tomorrow, 12, 0),
                         professional
                 ),
                 new Hour(
-                        LocalDateTime.of(2023, 3, 31, 13, 0),
-                        LocalDateTime.of(2023, 3, 31, 14, 0),
+                        LocalDateTime.of(year, month, tomorrow, 13, 0),
+                        LocalDateTime.of(year, month, tomorrow, 14, 0),
                         professional
                 ),
                 new Hour(
-                        LocalDateTime.of(2023, 3, 31, 14, 0),
-                        LocalDateTime.of(2023, 3, 31, 15, 0),
+                        LocalDateTime.of(year, month, tomorrow, 14, 0),
+                        LocalDateTime.of(year, month, tomorrow, 15, 0),
                         professional
                 ),
                 new Hour(
-                        LocalDateTime.of(2023, 3, 31, 15, 0),
-                        LocalDateTime.of(2023, 3, 31, 16, 0),
+                        LocalDateTime.of(year, month, tomorrow, 15, 0),
+                        LocalDateTime.of(year, month, tomorrow, 16, 0),
                         professional
                 ),
                 new Hour(
-                        LocalDateTime.of(2023, 3, 31, 16, 0),
-                        LocalDateTime.of(2023, 3, 31, 17, 0),
+                        LocalDateTime.of(year, month, tomorrow, 16, 0),
+                        LocalDateTime.of(year, month, tomorrow, 17, 0),
                         professional
                 ),
                 new Hour(
-                        LocalDateTime.of(2023, 3, 31, 17, 0),
-                        LocalDateTime.of(2023, 3, 31, 18, 0),
+                        LocalDateTime.of(year, month, tomorrow, 17, 0),
+                        LocalDateTime.of(year, month, tomorrow, 18, 0),
                         professional
                 )
         });

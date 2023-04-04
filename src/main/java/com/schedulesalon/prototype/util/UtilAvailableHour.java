@@ -5,6 +5,7 @@ import com.schedulesalon.prototype.model.Hour;
 import com.schedulesalon.prototype.model.Professional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +13,8 @@ public class UtilAvailableHour {
     public static final int MAX_HOUR = 23;
     public static final int MAX_DAY = 31;
 
-    public static final LocalDateTime actualDate = LocalDateTime.now();
+    public static final int STANDART_MINUTE = 0;
 
-    public static final int getActualYear() {
-        return actualDate.getYear();
-    }
-
-    public static final int getActualMonth() {
-        return actualDate.getMonthValue();
-    }
 
     public static final Professional getFirstAndSecondRoundAndBreakHourToCreateTheRoundsHours(Professional professional, AvailableDate availableDate) throws Exception {
         verifyAvailableDateProps(availableDate);
@@ -36,16 +30,15 @@ public class UtilAvailableHour {
     }
 
     private static List<Hour> loopThroughInitialAndFinalHourToCreateTheHours(Professional professional, int initialHour, int finalHour, AvailableDate availableDate) throws Exception {
-        int STANDARD_MINUTE = 0;
         List<Hour> hours = new ArrayList<>();
         LocalDateTime begin = null;
         LocalDateTime end = null;
 
         for (int hour = initialHour; hour <= finalHour; hour++) {
             if (begin == null) {
-                begin = makeHour(professional, availableDate.getYear(), availableDate.getMonth(), availableDate.getDay(), hour, STANDARD_MINUTE);
+                begin = makeHour(professional, availableDate.getYear(), availableDate.getMonth(), availableDate.getDay(), hour, UtilAvailableHour.STANDART_MINUTE);
             } else if (end == null) {
-                end = makeHour(professional, availableDate.getYear(), availableDate.getMonth(), availableDate.getDay(), hour, STANDARD_MINUTE);
+                end = makeHour(professional, availableDate.getYear(), availableDate.getMonth(), availableDate.getDay(), hour, UtilAvailableHour.STANDART_MINUTE);
             }
 
             if (begin != null && end != null) {
@@ -63,7 +56,7 @@ public class UtilAvailableHour {
         UtilParam.throwExceptionIfStringParamsAreNotFilled(params);
         
         LocalDateTime hourCreated = LocalDateTime.of(year, month, day, hour, minute);
-        verifyActualDate(hourCreated, params);
+        verifyActualDate(hourCreated);
         verifyIfTheProfessionalHaveTheHour(professional, hourCreated);
         return hourCreated;
     }
@@ -78,11 +71,15 @@ public class UtilAvailableHour {
     }
 
     public static Boolean doesTheProfessionalHaveThisHour(Professional professional, LocalDateTime hourCreated) {
-        return professional.getHours().stream().anyMatch(hour -> hour.getBegin().equals(hourCreated) || hour.getEnd().equals(hourCreated));
+        List<Hour> professionalHours = professional.getHours();
+        if (professionalHours != null)
+            return professional.getHours().stream().anyMatch(hour -> hour.getBegin().equals(hourCreated) || hour.getEnd().equals(hourCreated));
+        return false;
     }
 
-    public static void verifyActualDate(LocalDateTime hour, String[] exceptionParams) throws Exception {
-        if (hour.isBefore(actualDate)) {
+    public static void verifyActualDate(LocalDateTime hour) throws Exception {
+        String[] exceptionParams = { hour.format(UtilDate.getFormatter(UtilDate.ANO_MES_DIA_HORAS_MINUTOS_SEGUNDOS))};
+        if (hour.isBefore(UtilDate.actualDate)) {
             UtilException.throwDefault(UtilException.ExceptionBuilder(
                     UtilException.DATE_CREATED_SMALLER_THAN_ACTUAL_WITH_PARAM,
                     exceptionParams
