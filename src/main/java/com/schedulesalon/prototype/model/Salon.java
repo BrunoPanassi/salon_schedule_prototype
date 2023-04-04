@@ -10,9 +10,9 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class Salon {
 
+    public static final String objectName = "Salão";
     @Id
     @SequenceGenerator(name = "seq_salon", sequenceName = "seq_salon")
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_salon")
@@ -34,4 +34,12 @@ public class Salon {
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private  Manager manager;
+
+    public Salon(String name, String description, String address, SalonType salonType, Manager manager) {
+        this.name = name;
+        this.description = description;
+        this.address = address;
+        this.salonType = salonType;
+        this.manager = manager;
+    }
 }

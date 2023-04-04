@@ -11,7 +11,6 @@ import java.util.List;
 @Data
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 public class Job {
 
@@ -25,6 +24,7 @@ public class Job {
     @OneToMany(mappedBy = "job")
     private List<Service> services;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Collection<SalonType> salonType = new ArrayList<>();
+    public Job(String description) {
+        this.description = description;
+    }
 }

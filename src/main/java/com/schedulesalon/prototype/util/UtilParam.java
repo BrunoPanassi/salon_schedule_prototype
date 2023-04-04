@@ -16,6 +16,16 @@ public class UtilParam {
         }
     }
 
+    public static void throwExceptionWithParamIfStringParamsAreNotFilled(String[] params, String[] exceptionWhere) throws Exception {
+        if (!UtilParam.allStringParamsAreFilled(params)) {
+            UtilException.
+                    throwDefault(UtilException.ExceptionBuilder(
+                    UtilException.ALL_PARAMS_ARE_NOT_FILLED_WITH_PARAM,
+                    exceptionWhere
+            ));
+        }
+    }
+
     public static void throwExceptionIfObjectParamIsNull(Object object) throws Exception {
         if (object == null) {
             UtilException.throwDefault(UtilException.ALL_PARAMS_ARE_NOT_FILLED);
